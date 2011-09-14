@@ -74,9 +74,7 @@ Configuration
 liip_magento:
 # path to the Mage.php file
     mage_file:  %kernel.root_dir%/../../magento/app/Mage.php
-# the default store code (or id) if no store code found
-    default_store: de
-# only for a few store resolvers, mapping to store code
+# not for all store resolvers, mapping to store code
     store_mappings:
         de: de
         en: en
@@ -89,9 +87,18 @@ Usage
 Store Resolver
 --------------
 
-The default store resolver is `LocaleStore` which uses the symfony locale as 
-store code.
+For accessing customer data we need the correct Magento store to be initialized. Magento loads
+the default store which can be configured for the respective group. You can go to `System > Manage Stores`
+then open the item which is in the «Store Name» row (which is actually the group) and select the
+«Default Store View».
 
-Others are provided such as `LocaleStoreResolver` which can be configured to map
-locales to specific store codes. You may also write your own by implementing `StoreResolverInterface`.
+Store resolvers do figure out which Magento store to initialize. Whenever it can't determine a store
+it keeps the default one. Also, if it fails setting the resolved store it goes back to the default store.
 
+
+The default store resolver is `LocaleStore` which uses the symfony locale as store code. In case your
+store codes do not match the locales you need to use the `LocaleStoreResolver` which allows you to
+configure the mapping with `store_mappings` of the locale to the store code. This also helps if you need
+multiple fallback stores depending on the locale.
+
+For more customized resolvers you may also write your own by implementing `StoreResolverInterface`.

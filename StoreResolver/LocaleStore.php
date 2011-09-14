@@ -14,10 +14,7 @@ class LocaleStore implements StoreResolverInterface
     /**
      * @param   array   $storeMappings
      */
-    public function __construct($storeMappings)
-    {
-        // NOP
-    }
+    public function __construct($storeMappings) { /* NOP */ }
 
     /**
      * @param   Request $request

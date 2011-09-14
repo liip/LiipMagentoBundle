@@ -9,7 +9,6 @@
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequestSetStore" priority="127" />
             <file>%liip_magento.mage_file%</file>
             <argument type="service" id="liip_magento.store_resolver" />
-            <argument>%liip_magento.default_store%</argument>
         </service>
 
         <service id="liip_magento.store_resolver" class="Liip\MagentoBundle\StoreResolver\LocaleStore">

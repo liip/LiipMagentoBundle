@@ -29,14 +29,12 @@ class LocaleStoreResolver implements StoreResolverInterface
      */
     public function resolve(Request $request)
     {
-        $store = false;
-
         $locale = $request->getSession()->getLocale();
         if (array_key_exists($locale, $this->storeMappings)) {
-            $store = $this->storeMappings[$locale];
+            return $this->storeMappings[$locale];
         }
 
-        return $store;
+        return false;
     }
 }
 

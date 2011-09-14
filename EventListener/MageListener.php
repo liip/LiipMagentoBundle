@@ -12,15 +12,12 @@ class MageListener
     /** @var StoreResolverInterface */
     protected $storeResolver;
 
-    /** @var string     Default store code (or id) */
-    protected $defaultStore;
-
+    /** @var    \Mage_Core_Model_App */
     protected $app;
 
-    public function __construct(StoreResolverInterface $resolver, $defaultStore)
+    public function __construct(StoreResolverInterface $resolver)
     {
         $this->storeResolver = $resolver;
-        $this->defaultStore = $defaultStore;
     }
 
     /**
@@ -42,14 +39,24 @@ class MageListener
         if ($event->getRequestType() == HttpKernelInterface::MASTER_REQUEST
             && $this->app
         ) {
+
             $store = $this->storeResolver->resolve($event->getRequest());
 
-            if (!$store) {
-                $store = $this->defaultStore;
-            }
+            if (false !== $store) {
 
-            // run Magento
-            $this->app->setCurrentStore($store);
+                // keep default store in case manual override fails
+                $defaultStore = $this->app->getStore()->getCode();
+
+                $this->app->setCurrentStore($store);
+
+                try {
+                    // try to load the store
+                    $this->app->getStore();
+
+                } catch (\Mage_Core_Model_Store_Exception $e) {
+                    $this->app->setCurrentStore($defaultStore);
+                }
+            }
         }
     }
 }

@@ -22,8 +22,6 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('mage_file')->isRequired()->cannotBeEmpty()->end()
                 ->scalarNode('session_namespace')->defaultValue('frontend')->cannotBeEmpty()->end()
-                // default store is first non-admin store
-                ->scalarNode('default_store')->defaultValue(1)->end()
                 ->arrayNode('store_mappings')
                     ->addDefaultsIfNotSet()
                     ->useAttributeAsKey('name')
