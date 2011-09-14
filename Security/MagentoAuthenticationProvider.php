@@ -38,13 +38,39 @@ class MagentoAuthenticationProvider implements AuthenticationProviderInterface, 
         if (!$this->supports($token)) {
             return null;
         }
+        
+        try {
+            if (!$presentedPassword = $token->getCredentials()) {
+                throw new BadCredentialsException('The presented password cannot be empty.');
+            }
 
-        return $token;
+            if (\Mage::getSingleton('customer/session')->login($token->getUsername(), $token->getCredentials())) {
+
+                $id = \Mage::getSingleton('customer/session')->getCustomerId();
+
+                $user = $this->userProvider->loadUserByUsername($id);
+
+                if (!$user instanceof UserInterface) {
+                    throw new AuthenticationServiceException('The user provider must return an UserInterface object.');
+                }
+
+                $authenticatedToken = new MagentoToken($user, $this->providerKey);
+                $authenticatedToken->setAttributes($token->getAttributes());
+                return $authenticatedToken;
+            }
+
+            // login failed
+            throw new BadCredentialsException('Bad credentials');
+
+        } catch (\Exception $repositoryProblem) {
+
+            throw new AuthenticationServiceException($repositoryProblem->getMessage(), $token, 0, $repositoryProblem);
+        }
     }
 
     public function supports(TokenInterface $token)
     {
-        return $token instanceof MagentoToken && $this->providerKey === $token->getProviderKey();
+        return $token instanceof UsernamePasswordToken && $this->providerKey === $token->getProviderKey();
     }
 
     public function logout(Request $request, Response $response, TokenInterface $token)

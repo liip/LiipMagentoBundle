@@ -2,10 +2,10 @@
 
 namespace Liip\MagentoBundle\Security;
 
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
-
 use Symfony\Component\Security\Http\SecurityEvents;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface;
@@ -87,55 +87,225 @@ class MagentoAuthenticationListener implements ListenerInterface
         }
 
         $request = $event->getRequest();
+        if ($this->requiresAuthentication($request)) {
 
-        if (!\Mage::getSingleton('customer/session')->isLoggedIn()) {
-            return;
+            if (!$request->hasSession()) {
+                throw new \RuntimeException('This authentication method requires a session.');
+            }
+
+            try {
+                if (!$request->hasPreviousSession()) {
+                    throw new SessionUnavailableException('Your session has timed-out, or you have disabled cookies.');
+                }
+
+                if (null === $returnValue = $this->attemptAuthentication($request)) {
+                    return;
+                }
+
+                if ($returnValue instanceof TokenInterface) {
+
+                    $this->sessionStrategy->onAuthentication($request, $returnValue);
+
+                    $response = $this->onSuccess($event, $request, $returnValue);
+
+                } else if ($returnValue instanceof Response) {
+                    $response = $returnValue;
+                } else {
+                    throw new \RuntimeException('attemptAuthentication() must either return a Response, an implementation of TokenInterface, or null.');
+                }
+            } catch (AuthenticationException $e) {
+                $response = $this->onFailure($event, $request, $e);
+            }
+
+            $event->setResponse($response);
+
+        } else {
+
+            if (!\Mage::getSingleton('customer/session')->isLoggedIn()) {
+                return;
+            }
+
+            if (null !== $this->logger) {
+                $this->logger->debug('Remember-me cookie detected.');
+            }
+
+            try {
+                $id = \Mage::getSingleton('customer/session')->getCustomerId();
+
+                $user = $this->userProvider->loadUserByUsername($id);
+
+                if (null !== $this->logger) {
+                    $this->logger->info('Remember-me cookie accepted.');
+                }
+
+                $token = new MagentoToken($user, $this->providerKey);
+                $this->securityContext->setToken($token);
+
+                if (null !== $this->dispatcher) {
+                    $loginEvent = new InteractiveLoginEvent($request, $token);
+                    $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
+                }
+
+                if (null !== $this->logger) {
+                    $this->logger->debug('SecurityContext populated with remember-me token.');
+                }
+            } catch (AuthenticationException $failed) {
+                if (null !== $this->logger) {
+                    $this->logger->warn(
+                    'SecurityContext not populated with remember-me token as the'
+                    .' AuthenticationManager rejected the AuthenticationToken returned'
+                    .' by the RememberMeServices: '.$failed->getMessage()
+                    );
+                }
+            } catch (UsernameNotFoundException $notFound) {
+                if (null !== $this->logger) {
+                    $this->logger->info('Magento user for not found.');
+                }
+            } catch (UnsupportedUserException $unSupported) {
+                if (null !== $this->logger) {
+                    $this->logger->warn('User class not supported.');
+                }
+            } catch (AuthenticationException $invalid) {
+                if (null !== $this->logger) {
+                    $this->logger->debug('Magento authentication failed: '.$invalid->getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Whether this request requires authentication.
+     *
+     * The default implementation only processed requests to a specific path,
+     * but a subclass could change this to only authenticate requests where a
+     * certain parameters is present.
+     *
+     * @param Request $request
+     *
+     * @return Boolean
+     */
+    protected function requiresAuthentication(Request $request)
+    {
+        return $this->httpUtils->checkRequestPath($request, $this->options['check_path']);
+    }
+
+    protected function attemptAuthentication(Request $request)
+    {
+        if ($this->options['post_only'] && 'post' !== strtolower($request->getMethod())) {
+            if (null !== $this->logger) {
+                $this->logger->debug(sprintf('Authentication method not supported: %s.', $request->getMethod()));
+            }
+
+            return null;
+        }
+
+        if (null !== $this->csrfProvider) {
+            $csrfToken = $request->get($this->options['csrf_parameter'], null, true);
+
+            if (false === $this->csrfProvider->isCsrfTokenValid($this->options['intention'], $csrfToken)) {
+                throw new InvalidCsrfTokenException('Invalid CSRF token.');
+            }
+        }
+
+        $username = trim($request->get($this->options['username_parameter'], null, true));
+        $password = $request->get($this->options['password_parameter'], null, true);
+
+        $request->getSession()->set(SecurityContextInterface::LAST_USERNAME, $username);
+
+        return $this->authenticationManager->authenticate(new UsernamePasswordToken($username, $password, $this->providerKey));
+    }
+
+    private function onFailure(GetResponseEvent $event, Request $request, AuthenticationException $failed)
+    {
+        if (null !== $this->logger) {
+            $this->logger->info(sprintf('Authentication request failed: %s', $failed->getMessage()));
+        }
+
+        $this->securityContext->setToken(null);
+
+        if (null !== $this->failureHandler) {
+            return $this->failureHandler->onAuthenticationFailure($request, $failed);
+        }
+
+        if (null === $this->options['failure_path']) {
+            $this->options['failure_path'] = $this->options['login_path'];
+        }
+
+        if ($this->options['failure_forward']) {
+            if (null !== $this->logger) {
+                $this->logger->debug(sprintf('Forwarding to %s', $this->options['failure_path']));
+            }
+
+            $subRequest = $this->httpUtils->createRequest($request, $this->options['failure_path']);
+            $subRequest->attributes->set(SecurityContextInterface::AUTHENTICATION_ERROR, $failed);
+
+            return $event->getKernel()->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
         }
 
         if (null !== $this->logger) {
-            $this->logger->debug('Remember-me cookie detected.');
+            $this->logger->debug(sprintf('Redirecting to %s', $this->options['failure_path']));
         }
 
-        try {
-            $id = \Mage::getSingleton('customer/session')->getCustomerId();
+        $request->getSession()->set(SecurityContextInterface::AUTHENTICATION_ERROR, $failed);
 
-            $user = $this->userProvider->loadUserByUsername($id);
+        return $this->httpUtils->createRedirectResponse($request, $this->options['failure_path']);
+    }
 
-            if (null !== $this->logger) {
-                $this->logger->info('Remember-me cookie accepted.');
-            }
-
-            $token = new MagentoToken($user, $this->providerKey);
-            $this->securityContext->setToken($token);
-
-            if (null !== $this->dispatcher) {
-                $loginEvent = new InteractiveLoginEvent($request, $token);
-                $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
-            }
-
-            if (null !== $this->logger) {
-                $this->logger->debug('SecurityContext populated with remember-me token.');
-            }
-        } catch (AuthenticationException $failed) {
-            if (null !== $this->logger) {
-                $this->logger->warn(
-                    'SecurityContext not populated with remember-me token as the'
-                .' AuthenticationManager rejected the AuthenticationToken returned'
-                .' by the RememberMeServices: '.$failed->getMessage()
-                );
-            }
-        } catch (UsernameNotFoundException $notFound) {
-            if (null !== $this->logger) {
-                $this->logger->info('Magento user for not found.');
-            }
-        } catch (UnsupportedUserException $unSupported) {
-            if (null !== $this->logger) {
-                $this->logger->warn('User class not supported.');
-            }
-        } catch (AuthenticationException $invalid) {
-            if (null !== $this->logger) {
-                $this->logger->debug('Magento authentication failed: '.$invalid->getMessage());
-            }
+    private function onSuccess(GetResponseEvent $event, Request $request, TokenInterface $token)
+    {
+        if (null !== $this->logger) {
+            $this->logger->info(sprintf('User "%s" has been authenticated successfully', $token->getUsername()));
         }
+
+        $this->securityContext->setToken($token);
+
+        $session = $request->getSession();
+        $session->remove(SecurityContextInterface::AUTHENTICATION_ERROR);
+        $session->remove(SecurityContextInterface::LAST_USERNAME);
+
+        if (null !== $this->dispatcher) {
+            $loginEvent = new InteractiveLoginEvent($request, $token);
+            $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
+        }
+
+        if (null !== $this->successHandler) {
+            $response = $this->successHandler->onAuthenticationSuccess($request, $token);
+        } else {
+            $path = str_replace('{_locale}', $session->getLocale(), $this->determineTargetUrl($request));
+            $response = new RedirectResponse(0 !== strpos($path, 'http') ? $request->getUriForPath($path) : $path, 302);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Builds the target URL according to the defined options.
+     *
+     * @param Request $request
+     *
+     * @return string
+     */
+    private function determineTargetUrl(Request $request)
+    {
+        if ($this->options['always_use_default_target_path']) {
+            return $this->options['default_target_path'];
+        }
+
+        if ($targetUrl = $request->get($this->options['target_path_parameter'], null, true)) {
+            return $targetUrl;
+        }
+
+        $session = $request->getSession();
+        if ($targetUrl = $session->get('_security.target_path')) {
+            $session->remove('_security.target_path');
+
+            return $targetUrl;
+        }
+
+        if ($this->options['use_referer'] && $targetUrl = $request->headers->get('Referer')) {
+            return $targetUrl;
+        }
+
+        return $this->options['default_target_path'];
     }
 }
