@@ -7,8 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Resolves the Magento store by looking at the local and obey
- * the configured store mapping
+ * Resolves the magento store code by looking at symfony's locale
+ * and the configured mapping
  */
 class LocaleStoreResolver implements StoreResolverInterface
 {
