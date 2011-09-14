@@ -72,19 +72,25 @@ Configuration
 liip_magento:
 # path to the Mage.php file
     mage_file:  %kernel.root_dir%/../../magento/app/Mage.php
-# mapping to Magento store code
+# the default store code (or id) if no store code found
+    default_store: de
+# only for a few store resolvers, mapping to store code
     store_mappings:
         de: de
         en: en
         fr: en
-# the default store code if no store code found
-    default_store: 0
 ...
 ```
 
 Usage
 =====
 
-...
+Store Resolver
+--------------
 
+The default store resolver is `LocaleStore` which uses the symfony locale as 
+store code.
+
+Others are provided such as `LocaleStoreResolver` which can be configured to map
+locales to specific store codes. You may also write your own by implementing `StoreResolverInterface`.
 

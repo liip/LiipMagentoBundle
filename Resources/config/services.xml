@@ -12,7 +12,7 @@
             <argument>%liip_magento.default_store%</argument>
         </service>
 
-        <service id="liip_magento.store_resolver" class="Liip\MagentoBundle\StoreResolver\LocaleStoreResolver">
+        <service id="liip_magento.store_resolver" class="Liip\MagentoBundle\StoreResolver\LocaleStore">
             <argument>%liip_magento.store_mappings%</argument>
         </service>
 
