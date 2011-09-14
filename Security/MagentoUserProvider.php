@@ -16,23 +16,30 @@ class MagentoUserProvider implements UserProviderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param $id int Magento user ID
      */
-    function loadUserByUsername($email)
+    public function loadUserByUsername($id)
     {
-        $customer = \Mage::getModel('customer/customer')->setWebsiteId(1)->loadByEmail($email); // TODO configurable website ID
+        $customer = \Mage::getModel('customer/customer')->load($id);
 
-        if ($user->getId()) {
-            return new $this->class($customer->getId(), $customer->getEmail(), $customer->getFirstname(), $customer->getLastname());
+        if ($customer->getId()) {
+            return new $this->class($customer->getId(), $customer->getEmail(), $customer->getFirstname(), $customer->getLastname(), $customer->getGroupId());
+            return $user;
         }
 
         throw new UsernameNotFoundException(sprintf('User "%s" not found.', $email));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    function supportsClass($class)
+    public function refreshUser(UserInterface $user)
+    {
+        if (!$user instanceof MagentoUser) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
+        }
+
+        return $this->loadUserByUsername($user->getId());
+    }
+
+    public function supportsClass($class)
     {
         return $class === $this->class;
     }

@@ -10,14 +10,15 @@ class MagentoUser implements UserInterface
     protected $email;
     protected $firstname;
     protected $lastname;
-    protected $roles = array();
+    protected $groupId;
 
-    public function __construct($id, $email, $firstname, $lastname)
+    public function __construct($id, $email, $firstname, $lastname, $groupId)
     {
         $this->id = $id;
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
+        $this->groupId = $groupId;
     }
 
     public function getSalt()
@@ -29,21 +30,27 @@ class MagentoUser implements UserInterface
     {
     }
 
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getGroupId() {
+        return $this->groupId;
+    }
+
     public function equals(UserInterface $user)
     {
-        return $user->getUsername() === $this->getUsername();
+        if ($user instanceof MagentoUser) {
+            return $user->getId() === $user->id;
+        }
+        return $user->getUsername() === $this->email;
     }
 
     public function __toString()
     {
-        return $this->getUsername();
+        return $this->getEmail();
     }
 
-    /**
-     * Returns the email address of the Magento user.
-     *
-     * @return string email
-     */
     public function getUsername()
     {
         return $this->email;
@@ -76,7 +83,7 @@ class MagentoUser implements UserInterface
 
     public function getRoles()
     {
-        return $this->roles;
+        return array('ROLE_MAGENTO_' . $this->groupId);
     }
 
     public function hasRole($role)
@@ -84,13 +91,8 @@ class MagentoUser implements UserInterface
         return in_array((string) $role, $this->getRoles());
     }
 
-    public function setRoles($roles)
-    {
-        $this->roles = $roles;
-    }
-
     public function __sleep()
     {
-        return array('id', 'email', 'firstname', 'lastname', 'roles');
+        return array('id', 'email', 'firstname', 'lastname', 'groupId');
     }
 }
