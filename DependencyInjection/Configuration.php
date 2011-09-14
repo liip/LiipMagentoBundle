@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('file')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('file_mage')->isRequired()->cannotBeEmpty()->end()
             ->end();
 
         return $treeBuilder;
