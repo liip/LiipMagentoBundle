@@ -4,6 +4,7 @@ namespace Liip\MagentoBundle\EventListener;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 use Liip\MagentoBundle\StoreResolver\StoreResolverInterface;
 
@@ -58,4 +59,12 @@ class MageListener
             }
         }
     }
+
+    /**
+     * @param EventInterface $event
+     */
+     public function onKernelResponse(FilterResponseEvent $event)
+     {
+         $event->getRequest()->getSession()->save();
+     }
 }
