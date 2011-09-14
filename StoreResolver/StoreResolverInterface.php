@@ -11,6 +11,6 @@ interface StoreResolverInterface
      *
      * @return  \Symfony\Component\HttpFoundation\Request $request
      */
-    public function resolve(Request $request);
+    function resolve(Request $request);
 }
 
