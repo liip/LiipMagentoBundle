@@ -87,6 +87,23 @@ liip_magento:
         fr: en
 ```
 
+```
+# app/config/security.yml
+security:
+    factories:
+        - "%kernel.root_dir%/../vendor/bundles/Liip/MagentoBundle/Resources/config/security_factories.xml"
+    
+    providers:
+        magento: ~
+    
+    firewalls:
+        secured_area:
+            pattern:    ^/secured/
+            magento:
+                provider:   magento
+```
+
+
 Usage
 =====
 
