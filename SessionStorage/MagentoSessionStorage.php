@@ -14,9 +14,9 @@ class MagentoSessionStorage implements SessionStorageInterface
      */
     private $session;
 
-    public function __construct(array $options = array())
+    public function __construct($sessionNamespace = 'frontend')
     {
-        $this->session = \Mage::getSingleton('core/session', array('name' => 'frontend'));
+        $this->session = \Mage::getSingleton('core/session', array('name' => $sessionNamespace));
     }
 
     /**
