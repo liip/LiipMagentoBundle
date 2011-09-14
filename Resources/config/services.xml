@@ -20,5 +20,8 @@
             <argument>%liip_magento.session_namespace%</argument>
         </service>
 
+        <service id="security.user.provider.magento" class="Liip\MagentoBundle\Security\MagentoUserProvider">
+            <argument>Liip\MagentoBundle\Security\MagentoUser</argument>
+        </service>
     </services>
 </container>
