@@ -2,6 +2,7 @@
 
 namespace Liip\MagentoBundle\EventListener;
 
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,11 +13,10 @@ class MageListener
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
-        // run Magento
-        \Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
-
-        if (\Mage::getSingleton('customer/session')->isLoggedIn()) {
-
+        if ($event->getRequestType() == HttpKernelInterface::MASTER_REQUEST) {
+             
+            // run Magento
+            \Mage::app()->setCurrentStore('de');
         }
     }
 }
