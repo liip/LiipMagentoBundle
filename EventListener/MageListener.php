@@ -25,8 +25,7 @@ class MageListener
      */
     public function onKernelRequestInitApp(GetResponseEvent $event)
     {
-        if ($event->getRequestType() == HttpKernelInterface::MASTER_REQUEST) {
-
+        if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
             $this->app = \Mage::app();
         }
     }
