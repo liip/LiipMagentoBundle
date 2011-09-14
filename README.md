@@ -46,12 +46,8 @@ Installation
 
 5.  Configure the bundle
     
-    ```
-    # app/config/config.yml
-    liip_magento:
-        mage_file:  %kernel.root_dir%/../../magento/app/Mage.php
-    ...
-    ```
+    See *Configuration*
+    
 
 6.  Fix the Magento autoloader
 
@@ -66,6 +62,25 @@ Installation
         session:
             storage_id: liip_magento.session.storage
 
+
+Configuration
+============
+
+```
+# app/config/config.yml
+
+liip_magento:
+# path to the Mage.php file
+    mage_file:  %kernel.root_dir%/../../magento/app/Mage.php
+# mapping to Magento store code
+    store_mappings:
+        de: de
+        en: en
+        fr: en
+# the default store code if no store code found
+    default_store: 0
+...
+```
 
 Usage
 =====

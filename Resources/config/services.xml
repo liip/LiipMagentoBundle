@@ -7,6 +7,12 @@
         <service id="liip_magento.listener" class="Liip\MagentoBundle\EventListener\MageListener">
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" priority="9999" />
             <file>%liip_magento.mage_file%</file>
+            <argument type="service" id="liip_magento.store_resolver" />
+            <argument>%liip_magento.default_store%</argument>
+        </service>
+
+        <service id="liip_magento.store_resolver" class="Liip\MagentoBundle\StoreResolver\LocaleStoreResolver">
+            <argument>%liip_magento.store_mappings%</argument>
         </service>
 
         <service id="liip_magento.session.storage" class="Liip\MagentoBundle\SessionStorage\MagentoSessionStorage" public="false">

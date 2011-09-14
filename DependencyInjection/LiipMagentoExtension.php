@@ -22,6 +22,8 @@ class LiipMagentoExtension extends Extension
 
         $container->setParameter('liip_magento.mage_file', $config['mage_file']);
         $container->setParameter('liip_magento.session_namespace', $config['session_namespace']);
+        $container->setParameter('liip_magento.store_mappings', $config['store_mappings']);
+        $container->setParameter('liip_magento.default_store', $config['default_store']);
 
         $this->loadDefaults($container);
     }

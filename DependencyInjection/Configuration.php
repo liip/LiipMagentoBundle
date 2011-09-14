@@ -18,9 +18,18 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('liip_magento');
 
         $rootNode
+            ->fixXmlConfig('store_mapping', 'store_mappings')
             ->children()
                 ->scalarNode('mage_file')->isRequired()->cannotBeEmpty()->end()
                 ->scalarNode('session_namespace')->defaultValue('frontend')->cannotBeEmpty()->end()
+                // default store is first non-admin store
+                ->scalarNode('default_store')->defaultValue(1)->end()
+                ->arrayNode('store_mappings')
+                    ->addDefaultsIfNotSet()
+                    ->useAttributeAsKey('name')
+                    ->defaultValue(array())
+                    ->prototype('scalar')->end()
+                ->end()
             ->end();
 
         return $treeBuilder;
