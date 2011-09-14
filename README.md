@@ -58,9 +58,11 @@ Installation
 
 7.  Use the Magento session storage
 
+    ````
     framework:
         session:
             storage_id: liip_magento.session.storage
+    ````
 
 
 Configuration
@@ -79,7 +81,6 @@ liip_magento:
         de: de
         en: en
         fr: en
-...
 ```
 
 Usage
