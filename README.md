@@ -60,6 +60,12 @@ Installation
     $ patch -p0 --dry-run < $LIIP_MAGENTO_BUNDLE_DIR/magento-autoloader.patch
     ```
 
+7.  Use the Magento session storage
+
+    framework:
+        session:
+            storage_id: liip_magento.session.storage
+
 
 Usage
 =====

@@ -20,6 +20,7 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('mage_file')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('session_namespace')->defaultValue('frontend')->cannotBeEmpty()->end()
             ->end();
 
         return $treeBuilder;

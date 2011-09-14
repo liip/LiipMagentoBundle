@@ -9,5 +9,9 @@
             <file>%liip_magento.mage_file%</file>
         </service>
 
+        <service id="liip_magento.session.storage" class="Liip\MagentoBundle\SessionStorage\MagentoSessionStorage" public="false">
+            <argument>%liip_magento.session_namespace%</argument>
+        </service>
+
     </services>
 </container>
