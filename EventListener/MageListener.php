@@ -14,5 +14,9 @@ class MageListener
     {
         // run Magento
         \Mage::app()->setCurrentStore(\Mage_Core_Model_App::ADMIN_STORE_ID);
+
+        if (\Mage::getSingleton('customer/session')->isLoggedIn()) {
+
+        }
     }
 }
