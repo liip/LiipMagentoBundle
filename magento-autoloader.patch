@@ -1,0 +1,16 @@
+--- lib/Varien/Autoload.php.orig	2011-09-14 13:23:56.984556905 +0200
++++ lib/Varien/Autoload.php	2011-09-14 13:23:41.884557007 +0200
+@@ -90,6 +90,13 @@
+         }
+         $classFile.= '.php';
+         //echo $classFile;die();
++
++        // do not blow up if file does not exist,
++        // other autoloaders should have their turn as well
++        if (!@fopen($classFile, 'r', true)) {
++            return false;
++        }  
++
+         return include $classFile;
+     }
+ 
