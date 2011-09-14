@@ -15,6 +15,8 @@ class MageListener
     /** @var string     Default store code (or id) */
     protected $defaultStore;
 
+    protected $app;
+
     public function __construct(StoreResolverInterface $resolver, $defaultStore)
     {
         $this->storeResolver = $resolver;
@@ -24,18 +26,30 @@ class MageListener
     /**
      * @param GetResponseEvent $event
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequestInitApp(GetResponseEvent $event)
     {
         if ($event->getRequestType() == HttpKernelInterface::MASTER_REQUEST) {
 
+            $this->app = \Mage::app();
+        }
+    }
+
+    /**
+     * @param GetResponseEvent $event
+     */
+    public function onKernelRequestSetStore(GetResponseEvent $event)
+    {
+        if ($event->getRequestType() == HttpKernelInterface::MASTER_REQUEST
+            && $this->app
+        ) {
             $store = $this->storeResolver->resolve($event->getRequest());
 
             if (!$store) {
                 $store = $this->defaultStore;
             }
-             
+
             // run Magento
-            \Mage::app()->setCurrentStore($store);
+            $this->app->setCurrentStore($store);
         }
     }
 }
