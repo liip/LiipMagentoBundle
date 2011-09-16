@@ -7,7 +7,7 @@
 +
 +        // do not blow up if file does not exist,
 +        // other autoloaders should have their turn as well
-+        if (!@fopen($classFile, 'r', true)) {
++        if (!stream_resolve_include_path($classFile)) {
 +            return false;
 +        }  
 +
