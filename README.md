@@ -62,25 +62,20 @@ Installation
     $ patch -p0 --dry-run < $LIIP_MAGENTO_BUNDLE_DIR/magento-autoloader.patch
     ```
 
-7.  Use the Magento session storage
-
-    ````
-    framework:
-        session:
-            storage_id: liip_magento.session.storage
-    ````
-
-
 Configuration
 ============
 
 ```
 # app/config/config.yml
 
+framework:
+    session:
+        storage_id: liip_magento.session.storage
+
 liip_magento:
-# path to the Mage.php file
+    # path to the Mage.php file
     mage_file:  %kernel.root_dir%/../../magento/app/Mage.php
-# not for all store resolvers, mapping to store code
+    # not for all store resolvers, mapping to store code
     store_mappings:
         de: de
         en: en
