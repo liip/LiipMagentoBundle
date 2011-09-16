@@ -28,6 +28,12 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue(array())
                     ->prototype('scalar')->end()
                 ->end()
+                ->arrayNode('service')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('store_resolver')->defaultValue('liip_magento.store_resolver.default')->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

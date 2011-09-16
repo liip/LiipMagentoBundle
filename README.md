@@ -67,9 +67,9 @@ Configuration
 
 ```
 # app/config/config.yml
-
 framework:
     session:
+        # use the Magento session handler
         storage_id: liip_magento.session.storage
 
 liip_magento:
@@ -119,4 +119,12 @@ store codes do not match the locales you need to use the `LocaleStoreResolver` w
 configure the mapping with `store_mappings` of the locale to the store code. This also helps if you need
 multiple fallback stores depending on the locale.
 
-For more customized resolvers you may also write your own by implementing `StoreResolverInterface`.
+For more customized resolvers you may also write your own by implementing `StoreResolverInterface`. In
+that case the default resolver service can be overritten as follows:
+
+```
+# app/config/config.yml
+liip_magento:
+    service:
+        store_resolver: my.store_resolver.id
+```

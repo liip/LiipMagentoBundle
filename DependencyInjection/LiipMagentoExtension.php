@@ -25,6 +25,10 @@ class LiipMagentoExtension extends Extension
         $container->setParameter('liip_magento.store_mappings', $config['store_mappings']);
 
         $this->loadDefaults($container);
+
+        foreach ($config['service'] as $key => $service) {
+            $container->setAlias($this->getAlias().'.'.$key, $config['service'][$key]);
+        }
     }
 
     /**
