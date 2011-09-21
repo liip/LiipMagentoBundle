@@ -1,7 +1,7 @@
 MagentoBundle
 =============
 
-Integrate Symfony2 applications with Magento.
+Integrate Magento into Symfony2 applications.
 
 The Bundle is still a work in progress but the goal is to be able
 to talk to Magento from inside Symfony. This means that Magento
