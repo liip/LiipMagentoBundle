@@ -136,8 +136,6 @@ Retrieving Data and HTML from Magento
 
 In this demo we load the footer block and the number of items in the Magento cart
 
-Demo controller:
-
 ```
 class MagentoController extends Controller {
 
@@ -145,10 +143,11 @@ class MagentoController extends Controller {
      * @Template()
      */
     public function indexAction() {
-        $Block = \Mage::getSingleton('core/layout');
-        $footer = $Block->createBlock('Page/Html_Footer');
+
+        $block = \Mage::getSingleton('core/layout');
+        $footer = $block->createBlock('page/html_footer');
         $footer->setTemplate('page/html/footer.phtml');
-        $footer->toHTML();
+
         $cart = \Mage::helper('checkout/cart')->getCart()->getItemsCount();
         return array('cart' => $cart, 'footer' => $footer->toHTML());
     }
@@ -156,7 +155,7 @@ class MagentoController extends Controller {
 }
 ```
 
-Demo for the template-snippet:
+Template-snippet for the demo:
 
 ```
 {% block content %}
