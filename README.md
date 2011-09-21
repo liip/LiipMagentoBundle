@@ -62,6 +62,7 @@ Installation
     $ patch -p0 --dry-run < $LIIP_MAGENTO_BUNDLE_DIR/magento-autoloader.patch
     ```
 
+
 Configuration
 ============
 
@@ -127,4 +128,41 @@ that case the default resolver service can be overritten as follows:
 liip_magento:
     service:
         store_resolver: my.store_resolver.id
+```
+
+
+Retrieving Data and HTML from Magento
+-------------------------------------
+
+In this demo we load the footer block and the number of items in the Magento cart
+
+Demo controller:
+
+```
+class MagentoController extends Controller {
+
+    /**
+     * @Template()
+     */
+    public function indexAction() {
+        $Block = \Mage::getSingleton('core/layout');
+        $footer = $Block->createBlock('Page/Html_Footer');
+        $footer->setTemplate('page/html/footer.phtml');
+        $footer->toHTML();
+        $cart = \Mage::helper('checkout/cart')->getCart()->getItemsCount();
+        return array('cart' => $cart, 'footer' => $footer->toHTML());
+    }
+
+}
+```
+
+Demo for the template-snippet:
+
+```
+{% block content %}
+    
+    You have {{ cart }} items in your cart!
+    
+    {{ footer | raw}}
+{% endblock %}  
 ```
