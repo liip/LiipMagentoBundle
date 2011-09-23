@@ -97,6 +97,11 @@ security:
             pattern:    ^/secured/
             magento:
                 provider:   magento
+                check_path: /secured/login_check
+                login_path: /secured/login
+            logout:
+                path:   /secured/logout
+                target: /
 ```
 
 
