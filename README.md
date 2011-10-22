@@ -59,7 +59,7 @@ Installation
 
     ```
     $ cd $MAGENTO_DIR
-    $ patch -p0 --dry-run < $LIIP_MAGENTO_BUNDLE_DIR/magento-autoloader.patch
+    $ patch -p0 < $SYMFONY_DIR/vendor/bundles/Liip/MagentoBundle/magento-autoloader.patch
     ```
 
 
