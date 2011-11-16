@@ -88,19 +88,20 @@ liip_magento:
 security:
     factories:
         - "%kernel.root_dir%/../vendor/bundles/Liip/MagentoBundle/Resources/config/security_factories.xml"
-    
+
     providers:
         magento: ~
-    
+
     firewalls:
         secured_area:
-            pattern:    ^/secured/
+            pattern:    ^/
+            anonymous: true
             magento:
                 provider:   magento
-                check_path: /secured/login_check
-                login_path: /secured/login
+                check_path: /login_check
+                login_path: /login
             logout:
-                path:   /secured/logout
+                path:   /logout
                 target: /
 ```
 
@@ -169,3 +170,13 @@ Template-snippet for the demo:
     {{ footer | raw}}
 {% endblock %}  
 ```
+
+Testing it locally
+=====
+
+- Create 2 virtual hosts, one for Symfony and one for Magento, ie `blog.local` and `shop.local`
+- Setup Magento (ie. in <webroot>/yourproject/magento), and configure the cookie path to `/` and the cookie domain to `.local`
+- Setup Symfony (ie. in <webroot>/yourproject/symfony) and the LiipMagentoBundle 
+- Add the `login` and `login_check` routes and setup the login form, see the [Symfony docs](http://symfony.com/doc/current/book/security.html#using-a-traditional-login-form)
+
+After that, you should have synced sessions between `shop.local` and `blog.local` meaning that logging in/out on either side will login/logout the user on the opposite side.
