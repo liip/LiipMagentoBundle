@@ -88,19 +88,20 @@ liip_magento:
 security:
     factories:
         - "%kernel.root_dir%/../vendor/bundles/Liip/MagentoBundle/Resources/config/security_factories.xml"
-    
+
     providers:
         magento: ~
-    
+
     firewalls:
         secured_area:
-            pattern:    ^/secured/
+            pattern:    ^/
+            anonymous: ~
             magento:
                 provider:   magento
-                check_path: /secured/login_check
-                login_path: /secured/login
+                check_path: /login_check
+                login_path: /login
             logout:
-                path:   /secured/logout
+                path:   /logout
                 target: /
 ```
 
@@ -169,3 +170,73 @@ Template-snippet for the demo:
     {{ footer | raw}}
 {% endblock %}  
 ```
+
+More configuration examples
+===========================
+
+## Example 1 - Run magento on a subdomain
+
+- Create 2 virtual hosts, one for Symfony and one for Magento, e.g. `mysite.local` and `shop.mysite.local`:
+
+```
+Apache example:
+
+<VirtualHost *:80>
+    DocumentRoot "/var/www/mysite/symfony/web"
+
+    ServerName mysite.local
+
+    <Directory "/var/www/mysite/symfony/web">
+        AllowOverride All
+    </Directory>
+
+</VirtualHost>
+
+<VirtualHost *:80>
+    DocumentRoot "/var/www/mysite/magento"
+
+    ServerName shop.mysite.local
+
+    <Directory "/var/www/mysite/magento">
+        AllowOverride All
+    </Directory>
+
+</VirtualHost>
+```
+- Setup Magento (e.g. in ../project/magento), and configure the cookie path to `/` and the cookie domain to `.local`
+- Setup Symfony (e.g. in ../project/symfony) and the LiipMagentoBundle 
+- Add the `login` and `login_check` routes and setup the login form, see the [Symfony docs](http://symfony.com/doc/current/book/security.html#using-a-traditional-login-form)
+
+After that, you should have synced sessions between `mysite.local` and `shop.mysite.local` 
+meaning that logging in/out on either side will login/logout the user on the opposite side.
+
+## Example 2 - Run magento as an alias (e.g. mysite.com/shop)
+
+- Create 1 virtual hosts and add an alias for Magento :
+
+```
+Apache example: 
+
+<VirtualHost *:80>
+    DocumentRoot "/var/www/mysite/symfony/web"
+
+    ServerName mysite.local
+
+    Alias /shop /var/www/mysite/magento
+
+    <Directory "/var/www/mysite/symfony/web">
+        AllowOverride All
+    </Directory>
+
+    <Directory "/var/www/mysite/magento">
+        AllowOverride All
+    </Directory>
+</VirtualHost>
+
+```
+- Setup Magento (e.g. in ../project/magento), and configure the cookie path to `/` and the cookie domain to `.local`
+- Setup Symfony (e.g. in ../project/symfony) and the LiipMagentoBundle 
+- Add the `login` and `login_check` routes and setup the login form see the [Symfony docs](http://symfony.com/doc/current/book/security.html#using-a-traditional-login-form)
+
+After that, you should have synced sessions between `mysite.local` and `mysite.local/shop` 
+meaning that logging in/out on either side will login/logout the user on the opposite side.
