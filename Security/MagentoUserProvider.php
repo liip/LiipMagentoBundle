@@ -25,7 +25,6 @@ class MagentoUserProvider implements UserProviderInterface
 
         if ($customer->getId()) {
             return new $this->class($customer->getId(), $customer->getEmail(), $customer->getFirstname(), $customer->getLastname(), $customer->getGroupId());
-            return $user;
         }
 
         throw new UsernameNotFoundException(sprintf('User "%s" not found.', $email));
@@ -33,7 +32,7 @@ class MagentoUserProvider implements UserProviderInterface
 
     public function refreshUser(UserInterface $user)
     {
-        if (!$user instanceof MagentoUser) {
+        if (get_class($user) !== $this->class) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
         }
 

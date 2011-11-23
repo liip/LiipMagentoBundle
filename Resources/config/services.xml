@@ -2,6 +2,11 @@
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+    <parameters>
+        <parameter key="liip_magento.magento_user.class">Liip\MagentoBundle\Security\MagentoUser</parameter>
+        <parameter key="security.user.provider.concrete.magento.class">Liip\MagentoBundle\Security\MagentoUserProvider</parameter>        
+    </parameters>
+    
     <services>
 
         <service id="liip_magento.listener" class="Liip\MagentoBundle\EventListener\MageListener">
@@ -20,8 +25,8 @@
             <argument>%liip_magento.session_namespace%</argument>
         </service>
 
-        <service id="security.user.provider.concrete.magento" class="Liip\MagentoBundle\Security\MagentoUserProvider">
-            <argument>Liip\MagentoBundle\Security\MagentoUser</argument>
+        <service id="security.user.provider.concrete.magento" class="%security.user.provider.concrete.magento.class%">
+            <argument>%liip_magento.magento_user.class%</argument>
         </service>
 
         <service id="security.authentication.provider.magento" class="Liip\MagentoBundle\Security\MagentoAuthenticationProvider"
