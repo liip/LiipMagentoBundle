@@ -172,7 +172,7 @@ Template-snippet for the demo:
 ```
 
 More configuration examples
-=====
+===========================
 
 ## Example 1 - Run magento on a subdomain
 
@@ -203,11 +203,12 @@ Apache example:
 
 </VirtualHost>
 ```
-- Setup Magento (e.g. in <webroot>/yourproject/magento), and configure the cookie path to `/` and the cookie domain to `.local`
-- Setup Symfony (e.g. in <webroot>/yourproject/symfony) and the LiipMagentoBundle 
+- Setup Magento (e.g. in ../project/magento), and configure the cookie path to `/` and the cookie domain to `.local`
+- Setup Symfony (e.g. in ../project/symfony) and the LiipMagentoBundle 
 - Add the `login` and `login_check` routes and setup the login form, see the [Symfony docs](http://symfony.com/doc/current/book/security.html#using-a-traditional-login-form)
 
-After that, you should have synced sessions between `mysite.local` and `shop.mysite.local` meaning that logging in/out on either side will login/logout the user on the opposite side.
+After that, you should have synced sessions between `mysite.local` and `shop.mysite.local` 
+meaning that logging in/out on either side will login/logout the user on the opposite side.
 
 ## Example 2 - Run magento as an alias (e.g. mysite.com/shop)
 
@@ -233,8 +234,9 @@ Apache example:
 </VirtualHost>
 
 ```
-- Setup Magento (e.g. in <webroot>/yourproject/magento), and configure the cookie path to `/` and the cookie domain to `.local`
-- Setup Symfony (e.g. in <webroot>/yourproject/symfony) and the LiipMagentoBundle 
-- Add the `login` and `login_check` routes and setup the login form, see the [Symfony docs](http://symfony.com/doc/current/book/security.html#using-a-traditional-login-form)
+- Setup Magento (e.g. in ../project/magento), and configure the cookie path to `/` and the cookie domain to `.local`
+- Setup Symfony (e.g. in ../project/symfony) and the LiipMagentoBundle 
+- Add the `login` and `login_check` routes and setup the login form see the [Symfony docs](http://symfony.com/doc/current/book/security.html#using-a-traditional-login-form)
 
-After that, you should have synced sessions between `mysite.local` and `mysite.local/shop` meaning that logging in/out on either side will login/logout the user on the opposite side.
+After that, you should have synced sessions between `mysite.local` and `mysite.local/shop` 
+meaning that logging in/out on either side will login/logout the user on the opposite side.
