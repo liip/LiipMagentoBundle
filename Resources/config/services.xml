@@ -4,7 +4,9 @@
 
     <parameters>
         <parameter key="liip_magento.magento_user.class">Liip\MagentoBundle\Security\MagentoUser</parameter>
-        <parameter key="security.user.provider.concrete.magento.class">Liip\MagentoBundle\Security\MagentoUserProvider</parameter>        
+        <parameter key="security.user.provider.concrete.magento.class">Liip\MagentoBundle\Security\MagentoUserProvider</parameter>
+        <!--  override the symfony twig loader to load templates from magento -->
+        <parameter key="twig.loader.class">Liip\MagentoBundle\Loader\MagentoLoader</parameter>        
     </parameters>
     
     <services>
@@ -14,7 +16,7 @@
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequestSetStore" priority="127" />
             <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" priority="-9999" />
             <file>%liip_magento.mage_file%</file>
-            <argument type="service" id="liip_magento.store_resolver" />
+            <argument type="service" id="service_container" />
         </service>
 
         <service id="liip_magento.store_resolver.default" class="Liip\MagentoBundle\StoreResolver\LocaleStore">

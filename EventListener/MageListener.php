@@ -2,6 +2,8 @@
 
 namespace Liip\MagentoBundle\EventListener;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -12,13 +14,17 @@ class MageListener
 {
     /** @var StoreResolverInterface */
     protected $storeResolver;
+    
+    /** @var ContainerInterface */
+    protected $container;
 
     /** @var    \Mage_Core_Model_App */
     protected $app;
 
-    public function __construct(StoreResolverInterface $resolver)
-    {
-        $this->storeResolver = $resolver;
+    public function __construct(ContainerInterface $container)
+    {        
+        $this->container = $container;
+        $this->storeResolver = $container->get('liip_magento.store_resolver');
     }
 
     /**
@@ -27,7 +33,12 @@ class MageListener
     public function onKernelRequestInitApp(GetResponseEvent $event)
     {
         if (HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+            
             $this->app = \Mage::app();
+            // pass the ContainerInterface to magento
+            // see https://github.com/pulse00/Magento-Symfony-Module for an example usage
+            \Mage::dispatchEvent('symfony_on_kernel_request', array('container' => $this->container));
+            
         }
     }
 
