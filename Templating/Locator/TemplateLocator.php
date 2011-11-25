@@ -16,6 +16,11 @@ class TemplateLocator extends BaseTemplateLocator {
         if ($template instanceof MagentoTemplateReference) {
             
             $logicalName = (string) $template;
+            
+            if (isset($this->cache[$logicalName])) {
+                return $this->cache[$logicalName];
+            }
+            
             $mageDesignDir = \Mage::getBaseDir('design');
             $file = $mageDesignDir . DIRECTORY_SEPARATOR . $logicalName;
             
