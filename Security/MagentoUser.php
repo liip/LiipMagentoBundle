@@ -4,7 +4,7 @@ namespace Liip\MagentoBundle\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class MagentoUser implements UserInterface
+class MagentoUser implements MagentoUserInterface
 {
     protected $id;
     protected $email;
