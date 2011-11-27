@@ -8,11 +8,11 @@ use Symfony\Component\Templating\TemplateReferenceInterface;
 
 use \Symfony\Bundle\FrameworkBundle\Templating\Loader\TemplateLocator as BaseTemplateLocator;
 
-class TemplateLocator extends BaseTemplateLocator {
+class TemplateLocator extends BaseTemplateLocator 
+{
     
     public function locate($template, $currentPath = null, $first = true)
-    {
-                 
+    {                 
         if ($template instanceof MagentoTemplateReference) {
             
             $logicalName = (string) $template;
@@ -24,14 +24,12 @@ class TemplateLocator extends BaseTemplateLocator {
             $mageDesignDir = \Mage::getBaseDir('design');
             $file = $mageDesignDir . DIRECTORY_SEPARATOR . $logicalName;
             
-            if (file_exists($file)) {
-                return $this->cache[$logicalName] = $file;
-            } else {
-                throw new \Twig_Error_Loader(sprintf('Unable to find magento template "%s".', $logicalName), -1, null, $e);
+            if (!file_exists($file)) {
+                throw new \Twig_Error_Loader(sprintf('Unable to find magento template "%s".', $logicalName), -1, null, $e);                
             }
-        }
-        
-        return parent::locate($template, $currentPath, $first);
             
+            return $this->cache[$logicalName] = $file;            
+        }        
+        return parent::locate($template, $currentPath, $first);           
     }
 }

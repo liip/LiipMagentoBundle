@@ -32,7 +32,7 @@ class MagentoUserProvider implements UserProviderInterface
 
     public function refreshUser(UserInterface $user)
     {
-        if (get_class($user) !== $this->class) {
+        if (!$user instanceof MagentoUser) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
         }
 
