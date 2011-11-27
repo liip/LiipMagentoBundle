@@ -1,12 +1,11 @@
 <?php
 namespace Liip\MagentoBundle\Templating;
-use Liip\MagentoBundle\Templating\MagentoTemplateReference;
 
+use Liip\MagentoBundle\Templating\MagentoTemplateReference;
 use \Symfony\Bundle\FrameworkBundle\Templating\TemplateNameParser as BaseTemplateNameParser;
 
 class TemplateNameParser extends BaseTemplateNameParser 
-{
-    
+{    
     public function parse($name) 
     {        
         try {            
@@ -22,7 +21,7 @@ class TemplateNameParser extends BaseTemplateNameParser
         $separator = DIRECTORY_SEPARATOR;        
         $parts = explode($separator, $name);
         
-        if(count($parts) < 4 || $parts[3] !== 'template') {
+        if (count($parts) < 4 || $parts[3] !== 'template') {
             throw new \InvalidArgumentException("Unable to parse magento template " . $name);
         }        
         return new MagentoTemplateReference($name);        

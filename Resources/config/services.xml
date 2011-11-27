@@ -14,6 +14,7 @@
             <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequestSetStore" priority="127" />
             <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse" priority="-9999" />
             <file>%liip_magento.mage_file%</file>
+            <argument type="service" id="liip_magento.store_resolver.default" />            
             <argument type="service" id="service_container" />
         </service>
 

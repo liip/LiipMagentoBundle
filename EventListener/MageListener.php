@@ -21,10 +21,10 @@ class MageListener
     /** @var    \Mage_Core_Model_App */
     protected $app;
 
-    public function __construct(ContainerInterface $container)
-    {        
-        $this->container = $container;
-        $this->storeResolver = $container->get('liip_magento.store_resolver');
+    public function __construct(StoreResolverInterface $resolver, ContainerInterface $container)
+    {           
+        $this->storeResolver = $resolver;
+        $this->container = $container;        
     }
 
     /**
