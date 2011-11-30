@@ -2,7 +2,7 @@
 
 namespace Liip\MagentoBundle\EventDispatcher;
 
-use \Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 class MageEvent extends Event
 {
@@ -13,7 +13,7 @@ class MageEvent extends Event
         $this->mageEvent = $mageEvent;        
     }
     
-    public function getData($key='', $index=null, $default = null)
+    public function getData($key = '', $index = null, $default = null)
     {
         
         if ($data = $this->mageEvent->getData($key, $index)) {
