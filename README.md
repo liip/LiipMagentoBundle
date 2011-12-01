@@ -171,6 +171,69 @@ Template-snippet for the demo:
 {% endblock %}  
 ```
 
+Listening to Magento events
+===========================
+
+Using the [Magento Symfony module](https://github.com/pulse00/Magento-Symfony-Module) you can listen to events dispatched by Magento
+inside your Symfony application.
+
+Here's an example to handle the `customer_address_save_after` event, e.g.
+to synchronize your CRM backend with Magento customers:
+
+Register your listener in Symfony
+
+```yaml
+services:
+    acme_demo_bundle.customer_save_after: 
+        class: %acme_demo_bundle.customer_save_after.class%
+        arguments: [ @some_service_id ]
+        tags:
+            - { name: kernel.event_listener, event: mage.customer_save_after, method: synchronize }
+```
+
+Dispatch the event in Magento:
+
+```XML
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <MyModule_Core>
+            <version>0.1.0</version>
+        </MyModule_Core>
+    </modules> 
+    <global>    
+      <events>
+          <customer_address_save_after>
+              <observers>
+                  <address_update>
+                      <type>singleton</type>
+                      <class>MyModule_Core_Customer_Synchronizer</class>
+                      <method>synchronize</method>
+                  </address_update>
+              </observers>
+          </customer_address_save_after>
+      </events>
+    </global>
+</config>
+```
+
+```php
+<?php 
+class MyModule_Core_Customer_Synchronizer
+{
+    
+    public function synchronize(Varien_Event_Observer $observer) 
+    {                
+        $mageEvent = $observer->getEvent();
+        $symfonyEvent = new MageEvent($mageEvent);        
+        $container = Mage::getSingleton('Symfony_Core_DependencyInjection_Container');
+        $container->get('event_dispatcher')->dispatch('mage.customer_save_after', $symfonyEvent)        
+        
+    }
+}
+```
+
+
 More configuration examples
 ===========================
 
