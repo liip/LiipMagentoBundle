@@ -90,7 +90,8 @@ security:
         - "%kernel.root_dir%/../vendor/bundles/Liip/MagentoBundle/Resources/config/security_factories.xml"
 
     providers:
-        magento: ~
+        magento:
+            id: security.user.provider.magento
 
     firewalls:
         secured_area:

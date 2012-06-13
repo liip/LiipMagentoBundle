@@ -4,7 +4,7 @@
 
     <parameters>
         <parameter key="liip_magento.magento_user.class">Liip\MagentoBundle\Security\MagentoUser</parameter>
-        <parameter key="security.user.provider.concrete.magento.class">Liip\MagentoBundle\Security\MagentoUserProvider</parameter>
+        <parameter key="security.user.provider.magento.class">Liip\MagentoBundle\Security\MagentoUserProvider</parameter>
     </parameters>
     
     <services>
@@ -35,7 +35,7 @@
             <argument>%liip_magento.session_namespace%</argument>
         </service>
 
-        <service id="security.user.provider.concrete.magento" class="%security.user.provider.concrete.magento.class%">
+        <service id="security.user.provider.magento" class="%security.user.provider.magento.class%">
             <argument>%liip_magento.magento_user.class%</argument>
         </service>
 
