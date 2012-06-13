@@ -41,7 +41,7 @@
 
         <service id="security.authentication.provider.magento" class="Liip\MagentoBundle\Security\MagentoAuthenticationProvider"
             abstract="true" public="false">
-            <argument type="service" id="security.user.provider.concrete.magento" />
+            <argument /> <!-- User Provider -->
             <argument type="service" id="security.user_checker" />
             <argument /> <!-- Provider-shared Key -->
         </service>
@@ -58,7 +58,7 @@
             <argument type="service" id="security.authentication.failure_handler" on-invalid="null" />
             <argument type="service" id="logger" on-invalid="null" />
             <argument type="service" id="event_dispatcher" on-invalid="null" />
-            <argument type="service" id="security.user.provider.concrete.magento" /> <!-- User Provider -->
+            <argument /> <!-- User Provider -->
         </service>
     </services>
 </container>
