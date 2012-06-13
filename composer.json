@@ -1,0 +1,24 @@
+{
+    "name": "liip/magento-bundle",
+    "type": "symfony-bundle",
+    "description": "Integrate Magento into Symfony2 applications",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Liip AG",
+            "homepage": "http://www.liip.ch/"
+        },
+        {
+            "name": "Community contributions",
+            "homepage": "https://github.com/liip/LiipMagentoBundle/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/symfony": "2.*"
+    },
+    "autoload": {
+        "psr-0": { "Liip\\MagentoBundle": "" }
+    },
+    "target-dir": "Liip/MagentoBundle"
+}
